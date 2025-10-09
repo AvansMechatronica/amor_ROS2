@@ -1,5 +1,5 @@
-<package>
-  <name>rosaria</name>
+<package format="3">
+  <name>ros2aria</name>
   <version>0.9.0</version>
   <description>
     The <tt>RosAria</tt> node provides a ROS interface for most Adept MobileRobots, 
@@ -16,6 +16,7 @@
   <maintainer email="srecko.juric-kavelj@fer.hr">Srećko Jurić-Kavelj</maintainer>
   <maintainer email="ivan.markovic@fer.hr">Ivan Marković</maintainer>
   <maintainer email="reed.hedges@aedpt.com">Reed Hedges</maintainer>
+  <maintainer email="GA.Harkema@avans.nl">Gerard Harkema</maintainer>
 
   <license>GPLv2</license>
 
@@ -24,35 +25,24 @@
 
   <author>Srećko Jurić-Kavelj</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>message_generation</build_depend>
-  <build_depend>libaria</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>tf</build_depend>
-  <build_depend>dynamic_reconfigure</build_depend>
-  <build_depend>std_srvs</build_depend>
-  <run_depend>libaria</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <build_depend>std_msgs</build_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>dynamic_reconfigure</run_depend>
-  <run_depend>std_srvs</run_depend>
-  <!-- <test_depend>Aria</test_depend>
-  <test_depend>roscpp</test_depend>
-  <test_depend>nav_msgs</test_depend>
-  <test_depend>geometry_msgs</test_depend>
-  <test_depend>sensor_msgs</test_depend>
-  <test_depend>tf</test_depend> -->
+  <depend>libaria</depend>
+  <depend>rclcpp</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>dynamic_reconfigure</depend> <!-- If ported, otherwise remove -->
+  <depend>std_srvs</depend>
+
+  <!-- Remove message_generation and catkin-specific dependencies -->
+  <!-- Remove <run_depend> and <build_depend> in favor of <depend> -->
 
   <export>
-
+    <!-- Add pluginlib exports or node parameters here if needed -->
   </export>
 </package>

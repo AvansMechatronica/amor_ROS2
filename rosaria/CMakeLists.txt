@@ -1,120 +1,93 @@
-# http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
-cmake_minimum_required(VERSION 2.8.3)
-project(rosaria)
-# Load catkin and all dependencies required for this package
-# TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS message_generation roscpp nav_msgs geometry_msgs sensor_msgs tf
-  dynamic_reconfigure)
+cmake_minimum_required(VERSION 3.8)
+project(ros2aria)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
-#set the default path for built executables to the "bin" directory
-#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-#uncomment if you have defined messages
-add_message_files(
-  FILES
-  BumperState.msg
-)
-#uncomment if you have defined services
-#add_service_files(
-#  FILES
-#  # TODO: List your msg files here
-#)
-
-generate_dynamic_reconfigure_options(cfg/RosAria.cfg)
-
-#common commands for building c++ executables and libraries
-#add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-
+# --- Dependencies ---
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
-include_directories(${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
+find_package(std_srvs REQUIRED)
 
+# --- Optional Aria dependency ---
 find_package(Aria QUIET)
 if(Aria_FOUND)
-  message("CMake package for Aria was found, using that.")
-  # Aria package for CMake was found
-	if(EXISTS "${Aria_INCLUDE_DIRS}/Aria.h")
-		add_definitions(-DADEPT_PKG)
-	endif()
+  message(STATUS "Found Aria via CMake package.")
   include_directories(${Aria_INCLUDE_DIRS})
   link_directories(${Aria_LIBRARY_DIRS})
+  add_definitions(-DADEPT_PKG)
 else()
-  # No Aria package for CMake was found, search ourselves
-	# The installation package provided by Adept doesn't follow normal Linux
-	# installation locations, but the repackaged Debian package and AriaCoda do.
-  # If user set ARIA environment variable, look there, otherwise look in
-  # /usr/local/.
   if(DEFINED ENV{ARIA})
-    message("ARIA environment variable defined, checking there...")
-    set(prefix $ENV{ARIA})
+    set(ARIA_PREFIX $ENV{ARIA})
   else()
-    set(prefix "/usr/local")
+    set(ARIA_PREFIX "/usr/local")
   endif()
-  message("Looking for Aria in ${prefix}/Aria and ${prefix}...")
 
-	if(EXISTS "${prefix}/Aria/include/Aria.h")
-    message("Found ${prefix}/Aria/include/Aria.h, assuming Adept ARIA package.")
-	  add_definitions(-DADEPT_PKG)
-	  include_directories(${prefix}/Aria/include)
-	  link_directories(${prefix}/Aria/lib)
+  message(STATUS "Looking for Aria in ${ARIA_PREFIX}...")
+
+  if(EXISTS "${ARIA_PREFIX}/Aria/include/Aria.h")
+    message(STATUS "Found Adept ARIA at ${ARIA_PREFIX}/Aria/include")
+    include_directories(${ARIA_PREFIX}/Aria/include)
+    link_directories(${ARIA_PREFIX}/Aria/lib)
+    add_definitions(-DADEPT_PKG)
+  elseif(EXISTS "${ARIA_PREFIX}/include/Aria.h")
+    message(STATUS "Found Adept ARIA headers in ${ARIA_PREFIX}/include")
+    include_directories(${ARIA_PREFIX}/include)
+    link_directories(${ARIA_PREFIX}/lib)
+  elseif(EXISTS "${ARIA_PREFIX}/include/Aria/Aria.h")
+    message(STATUS "Found AriaCoda-style headers in ${ARIA_PREFIX}/include/Aria")
+    include_directories(${ARIA_PREFIX}/include)
+    link_directories(${ARIA_PREFIX}/lib)
   else()
-    if(EXISTS "${prefix}/include/Aria.h")
-      message("Found ${prefix)/include/Aria.h, assuming Adept ARIA source directory.")
-      add_definitions(-DADEPT_PKG)
-      include_directories(${prefix}/include)
-      link_directories(${prefix}/lib)
-    else()
-      if(EXISTS "${prefix}/include/Aria/Aria.h")
-        message("Found ${prefix}/include/Aria/Aria.h, assuming AriaCoda or repackaged ARIA.")
-        #add_definitions(-DARIACODA)
-        include_directories(${prefix}/include)
-        link_directories(${prefix}/lib)
-      else()
-        message("Aria.h not found in ${prefix}. Continuing with default header and library paths.")
-      endif()
-    endif()
-	endif()
+    message(WARNING "Aria.h not found; continuing with default paths.")
+  endif()
 endif()
 
-add_executable(RosAria RosAria.cpp LaserPublisher.cpp)
-add_dependencies(RosAria rosaria_gencfg)
-add_dependencies(RosAria rosaria_gencpp)
-
-target_link_libraries(RosAria ${catkin_LIBRARIES} ${Boost_LIBRARIES} Aria pthread dl rt)
-set_target_properties(RosAria PROPERTIES COMPILE_FLAGS "-fPIC")
-#set_target_properties(RosAria PROPERTIES LINK_FLAGS "-Wl")
-
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES geometry_msgs std_msgs
-)
-# TODO: fill in what other packages will need to use this package
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-    DEPENDS roscpp nav_msgs geometry_msgs sensor_msgs tf
+# --- Include dirs ---
+include_directories(
+  include
+  ${Boost_INCLUDE_DIRS}
 )
 
-#############
-## Install ##
-#############
-
-## Mark executables and/or libraries for installation
-install(
-  TARGETS 
-    RosAria
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# --- Source files ---
+set(SOURCES
+  src/LaserPublisher.cpp
+  src/RosAria.cpp
 )
+
+# --- Build executable ---
+add_executable(ros2aria_node ${SOURCES})
+
+target_link_libraries(ros2aria_node
+  ${Boost_LIBRARIES}
+  Aria
+  pthread
+  dl
+  rt
+)
+
+ament_target_dependencies(ros2aria_node
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  tf2_geometry_msgs
+  nav_msgs
+  tf2
+  tf2_ros
+  std_srvs
+)
+
+# --- Install ---
+install(TARGETS ros2aria_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+# --- Export package ---
+ament_package()
