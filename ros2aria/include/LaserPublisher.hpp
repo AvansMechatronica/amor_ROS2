@@ -25,6 +25,9 @@ public:
 
   ~LaserPublisher();
 
+private:
+  ArFunctorC<LaserPublisher> laserReadingsCB;
+  
 protected:
   void readingsCallback();
   void publishLaserScan();

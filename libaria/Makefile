@@ -738,7 +738,8 @@ install:
 	$(INSTALL) -D -m 666  Makefile.dep doxygen.conf $(DESTDIR)$(INSTALL_DIR)/
 	$(INSTALL) -D -m 664 bin/SIMULATOR_README.txt $(DESTDIR)$(INSTALL_DIR)/bin/SIMULATOR_README.txt
 	$(INSTALL) -d -m 777 $(DESTDIR)$(INSTALL_DIR)/lib/
-	$(INSTALL) -D --strip -m 666 lib/libAria.so lib/libArNetworking.so lib/libAriaJava.so lib/libArNetworkingJava.so $(DESTDIR)$(INSTALL_DIR)/lib/
+	#$(INSTALL) -D --strip -m 666 lib/libAria.so lib/libArNetworking.so lib/libAriaJava.so lib/libArNetworkingJava.so $(DESTDIR)$(INSTALL_DIR)/lib/
+	$(INSTALL) -D --strip -m 666 lib/libAria.so lib/libArNetworking.so $(DESTDIR)$(INSTALL_DIR)/lib/
 	@if test -z "$(DIST_INSTALL)"; then \
 		echo "if test \! -d $(DESTDIR)$(SYSTEM_ETC_DIR); then install -d $(DESTDIR)$(SYSTEM_ETC_DIR); fi" ;\
 		if test \! -d $(DESTDIR)$(SYSTEM_ETC_DIR); then install -d $(DESTDIR)$(SYSTEM_ETC_DIR); fi ;\

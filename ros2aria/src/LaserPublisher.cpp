@@ -24,7 +24,8 @@ LaserPublisher::LaserPublisher(
     tf_frame_(tf_frame),
     parent_tf_frame_(parent_tf_frame),
     global_tf_frame_(global_tf_frame),
-    broadcast_tf_(broadcast_tf)
+    broadcast_tf_(broadcast_tf),
+    laserReadingsCB(this, &LaserPublisher::readingsCallback) 
 {
   if (!laser_) {
     RCLCPP_ERROR(node_->get_logger(), "LaserPublisher: null ArLaser pointer.");
@@ -32,8 +33,10 @@ LaserPublisher::LaserPublisher(
   }
 
   laser_->lockDevice();
-  laser_->addReadingCB(this, &LaserPublisher::readingsCallback);
+  laser_->addReadingCB(&laserReadingsCB);
   laser_->unlockDevice();
+  // ...existing code...
+
 
   std::string laserscan_name(laser_->getName());
   boost::erase_all(laserscan_name, ".");
@@ -88,7 +91,7 @@ LaserPublisher::~LaserPublisher()
 {
   if (laser_) {
     laser_->lockDevice();
-    laser_->remReadingCB(this, &LaserPublisher::readingsCallback);
+    laser_->remReadingCB(&laserReadingsCB);
     laser_->unlockDevice();
   }
 }

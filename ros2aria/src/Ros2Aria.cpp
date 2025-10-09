@@ -28,6 +28,8 @@
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 
+#include "ros2aria_interfaces/msg/bumper_state.hpp" // custom message for bumpers
+
 #include <Aria.h>
 #include <ArRobotConfigPacketReader.h> // as in original
 
@@ -37,7 +39,7 @@ class RosAriaNode : public rclcpp::Node
 {
 public:
   explicit RosAriaNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
-  : Node("rosaria", options),
+  : Node("ros2aria", options),
     conn(nullptr),
     laserConnector(nullptr),
     robot(nullptr),
@@ -46,7 +48,9 @@ public:
     RevCount(-1),
     sonar_enabled(false),
     publish_aria_lasers(false),
-    published_motors_state(false)
+    published_motors_state(false),
+    cmdvel_timeout(rclcpp::Duration::from_seconds(0.6)) 
+
   {
     // declare parameters and load defaults
     declare_parameter<std::string>("port", "/dev/ttyUSB0");
@@ -84,7 +88,9 @@ public:
 
     // Publishers
     pose_pub = create_publisher<nav_msgs::msg::Odometry>("pose", 10);
-    bumpers_pub = create_publisher<sensor_msgs::msg::PointCloud>("bumper_state", 10); // using PointCloud only as placeholder for custom msg
+//    bumpers_pub = create_publisher<sensor_msgs::msg::PointCloud>("bumper_state", 10); // using PointCloud only as placeholder for custom msg
+    bumpers_pub = create_publisher<ros2aria_interfaces::msg::BumperState>("bumper_state", 10); // using PointCloud only as placeholder for custom msg
+    
     sonar_pub = create_publisher<sensor_msgs::msg::PointCloud>("sonar", 50);
     sonar_pointcloud2_pub = create_publisher<sensor_msgs::msg::PointCloud2>("sonar_pointcloud2", 50);
     voltage_pub = create_publisher<std_msgs::msg::Float64>("battery_voltage", 10);
@@ -226,7 +232,7 @@ private:
   // ------------ member variables ------------
   // ROS2 objects
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pose_pub;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr bumpers_pub;
+  rclcpp::Publisher<ros2aria_interfaces::msg::BumperState>::SharedPtr bumpers_pub;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr sonar_pub;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr sonar_pointcloud2_pub;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr voltage_pub;
@@ -267,6 +273,7 @@ private:
 
   // odom msg storage
   nav_msgs::msg::Odometry position;
+  ros2aria_interfaces::msg::BumperState bumpers;
 
   // robot calibration params
   int TicksMM;
@@ -421,10 +428,29 @@ private:
     unsigned char front_bumpers = static_cast<unsigned char>(stall >> 8);
     unsigned char rear_bumpers = static_cast<unsigned char>(stall);
 
-    sensor_msgs::msg::PointCloud bumpers_msg;
-    bumpers_msg.header.stamp = now();
-    bumpers_msg.header.frame_id = frame_id_bumper;
-    // Note: original code used a custom BumperState message. Supply equivalent handling in your port.
+    ros2aria_interfaces::msg::BumperState bumpers_msg;
+
+    std::stringstream bumper_info(std::stringstream::out);
+    // Bit 0 is for stall, next bits are for bumpers (leftmost is LSB)
+    for (unsigned int i=0; i<robot->getNumFrontBumpers(); i++)
+    {
+      bumpers.front_bumpers[i] = (front_bumpers & (1 << (i+1))) == 0 ? 0 : 1;
+      bumper_info << " " << (front_bumpers & (1 << (i+1)));
+    }
+    RCLCPP_WARN(get_logger(), "RosAria: Front bumpers:%s", bumper_info.str().c_str());
+
+    bumper_info.str("");
+    // Rear bumpers have reverse order (rightmost is LSB)
+    unsigned int numRearBumpers = robot->getNumRearBumpers();
+    for (unsigned int i=0; i<numRearBumpers; i++)
+    {
+      bumpers.rear_bumpers[i] = (rear_bumpers & (1 << (numRearBumpers-i))) == 0 ? 0 : 1;
+      bumper_info << " " << (rear_bumpers & (1 << (numRearBumpers-i)));
+    }
+    RCLCPP_WARN(get_logger(), "RosAria: Rear bumpers:%s", bumper_info.str().c_str());
+
+
+
     bumpers_pub->publish(bumpers_msg);
 
     // battery

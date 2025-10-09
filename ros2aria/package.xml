@@ -38,11 +38,11 @@
   <depend>tf2_geometry_msgs</depend>
   <depend>dynamic_reconfigure</depend> <!-- If ported, otherwise remove -->
   <depend>std_srvs</depend>
+  <depend>ros2aria_interfaces</depend>
 
   <!-- Remove message_generation and catkin-specific dependencies -->
   <!-- Remove <run_depend> and <build_depend> in favor of <depend> -->
 
   <export>
-    <!-- Add pluginlib exports or node parameters here if needed -->
   </export>
 </package>

@@ -1,0 +1,93 @@
+cmake_minimum_required(VERSION 3.5)
+project(ros2aria)
+
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(Boost REQUIRED COMPONENTS thread)
+
+# Aria library
+find_package(Aria QUIET)
+if(Aria_FOUND)
+  message("Aria package found")
+  include_directories(${Aria_INCLUDE_DIRS})
+  link_directories(${Aria_LIBRARY_DIRS})
+else()
+  message("Aria package not found, trying /usr/local/include...")
+  include_directories(/usr/local/include)
+  link_directories(/usr/local/lib)
+endif()
+
+include_directories(${Boost_INCLUDE_DIRS})
+
+# Messages
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/BumperState.msg"
+  DEPENDENCIES std_msgs
+)
+
+# Executable
+add_executable(ros2aria_node
+  src/RosAria.cpp
+  src/LaserPublisher.cpp
+)
+
+ament_target_dependencies(ros2aria_node
+  rclcpp
+  std_msgs
+  sensor_msgs
+  geometry_msgs
+  nav_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  std_srvs
+)
+
+# Link Aria library
+target_link_libraries(ros2aria_node
+  ${Boost_LIBRARIES}
+  Aria
+  pthread
+  dl
+  rt
+)
+
+# Link generated message interfaces
+rosidl_target_interfaces(ros2aria_node
+  ${PROJECT_NAME} "rosidl_typesupport_cpp"
+)
+
+install(TARGETS ros2aria_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Export dependencies
+ament_export_dependencies(
+  rclcpp
+  std_msgs
+  sensor_msgs
+  geometry_msgs
+  nav_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  std_srvs
+)
+
+ament_package()
