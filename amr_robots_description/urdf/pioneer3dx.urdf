@@ -4,7 +4,14 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="pioneer3dx" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://ros.org/wiki/xacro">
-  <!--<include filename="$(find amr_robots_description)/urdf/materials.xacro"/>-->
+  <!-- Insert a dummy root link (no inertial) so the actual base_link is not the root with inertia -->
+  <link name="robot_base"/>
+  <joint name="robot_base_to_base_link" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="robot_base"/>
+    <child link="base_link"/>
+  </joint>
+  <include filename="$(find amr_robots_description)/urdf/materials.xacro"/>
   <!-- Chassis -->
   <link name="base_link">
     <inertial>
