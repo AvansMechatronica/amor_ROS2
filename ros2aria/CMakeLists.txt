@@ -85,8 +85,15 @@ ament_target_dependencies(ros2aria_node
   ros2aria_interfaces
 )
 
+# Install launch files
+#install(
+#  DIRECTORY launch
+#  DESTINATION share/${PROJECT_NAME}
+#)
+
 # --- Install ---
-install(TARGETS ros2aria_node
+install(
+  TARGETS ros2aria_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

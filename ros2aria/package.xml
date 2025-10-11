@@ -44,5 +44,6 @@
   <!-- Remove <run_depend> and <build_depend> in favor of <depend> -->
 
   <export>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

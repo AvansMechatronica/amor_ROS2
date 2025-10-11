@@ -43,7 +43,7 @@ setup(
     data_files=package_files(data_files, ['launch/', 'rviz/', 'urdf/', 'meshes/', 'models/']),
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='student',
+    maintainer='gerard',
     maintainer_email='ga.harkema@avans.nl',
     description='TODO: Package description',
     license='TODO: License declaration',

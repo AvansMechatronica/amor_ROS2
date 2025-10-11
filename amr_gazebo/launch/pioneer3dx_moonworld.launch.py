@@ -32,12 +32,13 @@ def launch_setup(context, *args, **kwargs):
         with open(urdf_file, 'r') as f:
             robot_description = f.read()
 
-    # === Set Ignition model/resource paths ===
-    set_ignition_env = SetEnvironmentVariable(
-        name='IGN_GAZEBO_RESOURCE_PATH',
-        value=f"{os.path.join(sim_pkg, 'models')}:{os.path.join(sim_pkg, 'worlds')}:{os.path.join(sim_pkg, 'meshes')}"
-    )
 
+    desc_pkg = get_package_share_directory('amr_robots_description')
+
+    SetEnvironmentVariable(
+        name='IGN_GAZEBO_RESOURCE_PATH',
+        value=f"{desc_pkg}:{os.environ.get('IGN_GAZEBO_RESOURCE_PATH','')}"
+    )
 
     # === Launch Gazebo Ignition ===
     gazebo_launch = IncludeLaunchDescription(
@@ -60,12 +61,24 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # === Spawn the robot in Ignition ===
-    spawn_robot = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=['-name', 'pioneer3dx', '-topic', 'robot_description'],
-        output='screen',
-    )
+    if 0:
+        spawn_robot = Node(
+            package='ros_gz_sim',
+            executable='create',
+            arguments=['-name', 'pioneer3dx', '-topic', 'robot_description'],
+            output='screen',
+        )
+    else:
+        model_path = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf')
+        spawn_robot = Node(
+            package='ros_gz_sim',
+            executable='create',
+            arguments=['-name', 'pioneer3dx', '-file', model_path],
+            output='screen',
+        )
+
+
+
 
     return [
         #set_ignition_env,
