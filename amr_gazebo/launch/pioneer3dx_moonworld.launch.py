@@ -33,11 +33,9 @@ def launch_setup(context, *args, **kwargs):
             robot_description = f.read()
 
 
-    desc_pkg = get_package_share_directory('amr_robots_description')
-
-    SetEnvironmentVariable(
-        name='IGN_GAZEBO_RESOURCE_PATH',
-        value=f"{desc_pkg}:{os.environ.get('IGN_GAZEBO_RESOURCE_PATH','')}"
+    gz_resource_path = SetEnvironmentVariable(
+        name='GZ_SIM_RESOURCE_PATH',
+        value=f"{desc_pkg}:{os.environ.get('GZ_SIM_RESOURCE_PATH','')}"
     )
 
     # === Launch Gazebo Ignition ===
@@ -61,27 +59,20 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # === Spawn the robot in Ignition ===
-    if 0:
-        spawn_robot = Node(
-            package='ros_gz_sim',
-            executable='create',
-            arguments=['-name', 'pioneer3dx', '-topic', 'robot_description'],
-            output='screen',
-        )
-    else:
-        model_path = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf')
-        spawn_robot = Node(
-            package='ros_gz_sim',
-            executable='create',
-            arguments=['-name', 'pioneer3dx', '-file', model_path],
-            output='screen',
-        )
+    spawn_robot = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=['-name', 'pioneer3dx', '-topic', 'robot_description'],
+        output='screen',
+    )
+
 
 
 
 
     return [
         #set_ignition_env,
+        gz_resource_path,
         gazebo_launch,
         robot_state_publisher,
         spawn_robot,

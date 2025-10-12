@@ -55,7 +55,7 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     pkg_share = get_package_share_directory('amr_robots_description')
-    default_urdf_path = os.path.join(pkg_share, 'urdf', 'pioneer3dx.urdf')
+    default_urdf_path = os.path.join(pkg_share, 'urdf', 'pioneer3dx.urdf.xacro')
 
     urdf_arg = DeclareLaunchArgument(
         'urdf',

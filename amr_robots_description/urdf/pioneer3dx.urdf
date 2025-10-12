@@ -296,45 +296,40 @@
     <back_sonar parent="base_link"/>
     <top_plate parent="base_link"/>
   </create>
-
 	<!-- Changed by Gerard-->
-  <gazebo>
-    <!-- Differential drive plugin -->
-    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <alwaysOn>true</alwaysOn>
-      <updateRate>100</updateRate>
-      <leftJoint>left_wheel_joint</leftJoint>
-      <rightJoint>right_wheel_joint</rightJoint>
-      <wheelSeparation>0.158</wheelSeparation>
-      <wheelDiameter>0.12</wheelDiameter>
-      <torque>5</torque>
-      <!-- Optional: specify joint velocity/position interfaces -->
-      <!-- <interface>velocity</interface> -->
-      <commandTopic>cmd_vel</commandTopic>
-      <robotBaseFrame>base_link</robotBaseFrame>
-      <odometryTopic>odom</odometryTopic>
-      <odometryFrame>odom</odometryFrame>
-    </plugin>
+	<gazebo>
+	<!-- Differential drive plugin -->
+	<plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+		<alwaysOn>true</alwaysOn>
+		<updateRate>100</updateRate>
+		<leftJoint>left_wheel_joint</leftJoint>
+		<rightJoint>right_wheel_joint</rightJoint>
+		<wheelSeparation>0.158</wheelSeparation>
+		<wheelDiameter>0.12</wheelDiameter>
+		<torque>5</torque>
+		<!-- Optional: specify joint velocity/position interfaces -->
+		<!-- <interface>velocity</interface> -->
+		<commandTopic>cmd_vel</commandTopic>
+		<robotBaseFrame>base_link</robotBaseFrame>
+		<odometryTopic>odom</odometryTopic>
+		<odometryFrame>odom</odometryFrame>
+	</plugin>
 
-    <!-- Ground truth pose (P3D) plugin -->
-    <plugin name="ground_truth_pose" filename="libgazebo_ros_p3d.so">
-      <alwaysOn>true</alwaysOn>
-      <updateRate>50</updateRate>
-      <bodyName>base_link</bodyName>
-      <topicName>ground_truth</topicName>
-      <frameName>odom</frameName>
-    </plugin>
+	<!-- Ground truth pose (P3D) plugin -->
+	<plugin name="ground_truth_pose" filename="libgazebo_ros_p3d.so">
+		<alwaysOn>true</alwaysOn>
+		<updateRate>50</updateRate>
+		<bodyName>base_link</bodyName>
+		<topicName>ground_truth</topicName>
+		<frameName>odom</frameName>
+	</plugin>
 
-    <!-- Optional: controller manager (ROS 2 example) -->
-    <!--
-    <plugin name="ros2_controller_manager" filename="libgazebo_ros2_control.so">
-      <robotNamespace>/</robotNamespace>
-      <controlPeriod>0.01</controlPeriod>
-    </plugin>
-    -->
-  </gazebo>
-
-
-
+	<!-- Optional: controller manager (ROS 2 example) -->
+	<!--
+	<plugin name="ros2_controller_manager" filename="libgazebo_ros2_control.so">
+		<robotNamespace>/</robotNamespace>
+		<controlPeriod>0.01</controlPeriod>
+	</plugin>
+	-->
+	</gazebo>
 </robot>
-

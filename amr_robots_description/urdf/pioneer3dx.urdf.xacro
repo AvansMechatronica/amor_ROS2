@@ -8,6 +8,7 @@
 
   <!--<include filename="$(find amr_robots_description)/urdf/materials.xacro"/>-->
   <xacro:include filename="$(find amr_robots_description)/urdf/pioneer3dx_wheel.xacro"/>
+  <xacro:include filename="$(find amr_robots_description)/urdf/materials.xacro"/>
   
 
 <!-- Chassis -->
@@ -119,14 +120,20 @@
 	</link>
 
 	<!-- Caster -->
+
 	<joint name="base_caster_swivel_joint" type="continuous">
 		<origin xyz="-0.185 0 0.055" rpy="0 0 0"/>
+		<!--
 		<anchor xyz="0 0 0"/>
     	<limit effort="100" velocity="100" k_velocity="0" />
     	<joint_properties damping="0.0" friction="0.0" />
+		-->
 		<parent link="base_link"/>
 		<child link="caster_swivel"/>
+
 	</joint>
+
+
 	<link name="caster_swivel">
 		<inertial>
 			<mass value="0.1"/>	
@@ -134,21 +141,23 @@
 			<inertia ixx="0.01" ixy="0" ixz="0"
 				 iyy="0.01" iyz="0" izz="0.01"/>
   	 	</inertial>
-	<visual>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<geometry name="pioneer_geom">
-			<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_swivel.stl"/>
-		</geometry>
-		<material name="caster_swivel">
-			<color rgba="0.5 0.5 0.5 1"/>
-		</material>
-	</visual>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry name="pioneer_geom">
+				<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_swivel.stl"/>
+			</geometry>
+			<material name="caster_swivel">
+				<color rgba="0.5 0.5 0.5 1"/>
+			</material>
+		</visual>
 	</link>
 	<gazebo reference="caster_swivel">
 		<material value="Gazebo/Grey"/>
 	</gazebo>
 
-<!-- Center Wheel + Hubcap -->
+
+	<!-- Center Wheel + Hubcap -->
+
 	<link name="caster_hubcap">
 		<inertial>
 			<mass value="0.01"/>	
@@ -161,7 +170,7 @@
 		<geometry name="pioneer_geom">
 			<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_hubcap.stl"/>
 		</geometry>
-		<material name="caster_swivel">
+		<material name="caster_hubcap">
 			<color rgba="0.5 0.5 0.5 1"/>
 		</material>
 	</visual>
@@ -178,11 +187,16 @@
 
 	<joint name="caster_swivel_hubcap_joint" type="continuous">
 		<origin xyz="-0.026 0 -0.016" rpy="0 0 0"/>
+		<!--
 		<axis xyz="0 1 0"/>
 		<anchor xyz="0 0 0"/>
-    <limit effort="100" velocity="100" k_velocity="0" />
-    <joint_properties damping="0.0" friction="0.0" />
-	  <parent link="caster_swivel"/>
+		<limit effort="100" velocity="100" k_velocity="0" />
+		<joint_properties damping="0.0" friction="0.0" />
+		-->
+		<parent link="base_link"/>
+		<!--
+		<parent link="caster_swivel"/>
+		-->
 		<child link="caster_wheel"/>
 	</joint>
 
@@ -203,7 +217,10 @@
 		</material>
 	</visual>
 	<collision>
+		<!-->
 		<origin xyz="0 0 0" rpy="${-3.1415927/2.0} 0 0"/>
+		-->
+		<origin xyz="0 0 0" rpy="-1.57079635 0 0"/> 
 		<geometry>
 			<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_wheel.stl"/>-->
 			<cylinder radius="0.0375" length="0.01"/>
@@ -231,7 +248,10 @@
 			</material>
 		</visual>
 		<collision>
+			<!--
 			<origin xyz="0 0 0" rpy="${-3.1415927/2.0} 0 0"/>
+			-->
+			<origin xyz="0 0 0" rpy="-1.57079635 0 0"/>
 			<geometry>
 				<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_wheel.stl"/>-->
 				<cylinder radius="0.09" length="0.01"/>
@@ -279,7 +299,10 @@
 			</material>
 		</visual>
 		<collision>
+		<!--
 		<origin xyz="0 0 0" rpy="${-3.1415927/2.0} 0 0"/>
+		-->
+		<origin xyz="0 0 0" rpy="-1.57079635 0 0"/>
 		<geometry>
 			<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_wheel.stl"/>-->
 			<cylinder radius="0.09" length="0.01"/>
