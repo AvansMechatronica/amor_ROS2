@@ -5,6 +5,9 @@ from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
 from launch.events import Shutdown
 from ament_index_python.packages import get_package_share_directory
+from launch.substitutions import LaunchConfiguration, Command, FindExecutable
+from launch_ros.parameter_descriptions import ParameterValue
+
 import os
 
 def launch_setup(context, *args, **kwargs):
@@ -14,6 +17,14 @@ def launch_setup(context, *args, **kwargs):
     # Read URDF content
     with open(urdf_path, 'r') as urdf_file:
         robot_description = urdf_file.read()
+
+    # Get URDF/xacro file path from argument (use substitution with xacro)
+    urdf_substitution = LaunchConfiguration('urdf')
+
+    # Convert xacro -> URDF at launch time (works for both .xacro and .urdf: xacro will pass through .urdf)
+    robot_description_cmd = Command([FindExecutable(name='xacro'), ' ', urdf_substitution])
+
+
 
     # Get RViz config path
     rviz_config_path = os.path.join(
@@ -28,7 +39,7 @@ def launch_setup(context, *args, **kwargs):
         executable='robot_state_publisher',
         name='robot_state_publisher',
         output='screen',
-        parameters=[{'robot_description': robot_description}]
+        parameters=[{'robot_description': ParameterValue(robot_description_cmd, value_type=str)}]
     )
 
     rviz_node = Node(

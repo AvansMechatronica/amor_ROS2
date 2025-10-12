@@ -14,6 +14,7 @@ import os
 import xacro
 
 
+
 def launch_setup(context, *args, **kwargs):
     """Executed at runtime when the launch context exists."""
 
@@ -68,8 +69,6 @@ def launch_setup(context, *args, **kwargs):
 
 
 
-
-
     return [
         #set_ignition_env,
         gz_resource_path,
@@ -93,7 +92,7 @@ def generate_launch_description():
 
     urdf_arg = DeclareLaunchArgument(
         'urdf',
-        default_value=os.path.join(desc_pkg, 'urdf', 'pioneer3dx.urdf'),
+        default_value=os.path.join(desc_pkg, 'urdf', 'pioneer3dx_gazebo.urdf.xacro'),
         description='Path to robot URDF or Xacro file',
     )
 
