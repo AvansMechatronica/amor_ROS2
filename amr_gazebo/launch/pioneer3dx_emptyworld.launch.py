@@ -86,7 +86,6 @@ def generate_launch_description():
     world_arg = DeclareLaunchArgument(
         'world',
         default_value=os.path.join(sim_pkg, 'worlds', 'empty.world'),
-        #default_value=os.path.join(sim_pkg, 'worlds', 'moon.world'),
         description='Path to Gazebo Ignition world file',
     )
 
