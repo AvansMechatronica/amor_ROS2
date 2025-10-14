@@ -173,12 +173,14 @@
             <uri>model://amr_robots_description/meshes/p3dx_meshes/caster_swivel.stl</uri>
           </mesh>
         </geometry>
+        <!--
         <material>
           <script>
             <name>Gazebo/Grey</name>
             <uri>__default__</uri>
           </script>
         </material>
+        -->
       </visual>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -270,6 +272,21 @@
       </axis>
     </joint>
     <static>0</static>
+    <plugin
+      filename="gz-sim-diff-drive-system"
+      name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.158</wheel_separation>
+      <wheel_radius>0.12</wheel_radius>
+      <topic>/model/pioneer3dx/cmd_vel</topic>
+      <enable_odom>true</enable_odom>
+      <odom_frame>odom</odom_frame>
+      <base_frame>base_link</base_frame>
+      <publish_rate>50</publish_rate>
+    </plugin>
+
+    <!--
     <plugin name='differential_drive_controller' filename='libgazebo_ros_diff_drive.so'>
       <alwaysOn>true</alwaysOn>
       <updateRate>100</updateRate>
@@ -283,5 +300,6 @@
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
     </plugin>
+    -->
   </model>
 </sdf>

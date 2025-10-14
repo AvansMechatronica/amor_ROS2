@@ -340,16 +340,18 @@
 	<!-- Ignition Gazebo Diff Drive Plugin -->
 	<!-- ============================= -->
   <gazebo>
-    <plugin name="diff_drive_plugin" filename="libignition-gazebo-diff-drive-system.so">
-      <left_joint>left_wheel_joint</left_joint>
-      <right_joint>right_wheel_joint</right_joint>
-      <wheel_separation>0.3</wheel_separation>
-      <wheel_radius>0.09</wheel_radius>
-      <topic>/model/pioneer3dx/cmd_vel</topic>
-      <enable_odom>true</enable_odom>
-      <odom_frame>odom</odom_frame>
-      <base_frame>base_link</base_frame>
-      <publish_rate>50</publish_rate>
+    <plugin
+		filename="gz-sim-diff-drive-system"
+		name="gz::sim::systems::DiffDrive">
+		<left_joint>left_wheel_joint</left_joint>
+		<right_joint>right_wheel_joint</right_joint>
+		<wheel_separation>0.3</wheel_separation>
+		<wheel_radius>0.09</wheel_radius>
+		<topic>/model/pioneer3dx/cmd_vel</topic>
+		<enable_odom>true</enable_odom>
+		<odom_frame>odom</odom_frame>
+		<base_frame>base_link</base_frame>
+		<publish_rate>50</publish_rate>
     </plugin>
   </gazebo>
 </robot>

@@ -267,7 +267,7 @@
 		</visual>
 	</link>
 
-	<joint name="left_wheel_joint" type="fixed"> <!-- type="continuous" -->
+	<joint name="left_wheel_joint" type="continuous" >
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<parent link="left_hub"/>
 		<child link="left_wheel"/>
@@ -318,7 +318,7 @@
 		</visual>
 	</link>
 
-	<joint name="right_wheel_joint" type="fixed"> <!-- type="continuous" -->
+	<joint name="right_wheel_joint" type="continuous">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<parent link="right_hub"/>
 		<child link="right_wheel"/>
@@ -335,42 +335,24 @@
   	<top_plate  parent="base_link"/>
   	</create>
 
-	<!-- Changed by Gerard-->
-	<gazebo>
-	<!-- Differential drive plugin -->
-	<plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-		<alwaysOn>true</alwaysOn>
-		<updateRate>100</updateRate>
-		<leftJoint>left_wheel_joint</leftJoint>
-		<rightJoint>right_wheel_joint</rightJoint>
-		<wheelSeparation>0.158</wheelSeparation>
-		<wheelDiameter>0.12</wheelDiameter>
-		<torque>5</torque>
-		<!-- Optional: specify joint velocity/position interfaces -->
-		<!-- <interface>velocity</interface> -->
-		<commandTopic>cmd_vel</commandTopic>
-		<robotBaseFrame>base_link</robotBaseFrame>
-		<odometryTopic>odom</odometryTopic>
-		<odometryFrame>odom</odometryFrame>
-	</plugin>
-
-	<!-- Ground truth pose (P3D) plugin -->
-	<plugin name="ground_truth_pose" filename="libgazebo_ros_p3d.so">
-		<alwaysOn>true</alwaysOn>
-		<updateRate>50</updateRate>
-		<bodyName>base_link</bodyName>
-		<topicName>ground_truth</topicName>
-		<frameName>odom</frameName>
-	</plugin>
-
-	<!-- Optional: controller manager (ROS 2 example) -->
-	<!--
-	<plugin name="ros2_controller_manager" filename="libgazebo_ros2_control.so">
-		<robotNamespace>/</robotNamespace>
-		<controlPeriod>0.01</controlPeriod>
-	</plugin>
-	-->
-	</gazebo>
+	<!-- ============================= -->
+	<!-- Ignition Gazebo Diff Drive Plugin -->
+	<!-- ============================= -->
+  <gazebo>
+    <plugin
+		filename="gz-sim-diff-drive-system"
+		name="gz::sim::systems::DiffDrive">
+		<left_joint>left_wheel_joint</left_joint>
+		<right_joint>right_wheel_joint</right_joint>
+		<wheel_separation>0.3</wheel_separation>
+		<wheel_radius>0.09</wheel_radius>
+		<topic>/model/pioneer3dx/cmd_vel</topic>
+		<enable_odom>true</enable_odom>
+		<odom_frame>odom</odom_frame>
+		<base_frame>base_link</base_frame>
+		<publish_rate>50</publish_rate>
+    </plugin>
+  </gazebo>
 
 
 </robot>
