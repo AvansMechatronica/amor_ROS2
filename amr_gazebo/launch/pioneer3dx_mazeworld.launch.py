@@ -14,6 +14,7 @@ import os
 import xacro
 
 
+
 def launch_setup(context, *args, **kwargs):
     """Executed at runtime when the launch context exists."""
 
@@ -64,7 +65,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # === Spawn robot in Gazebo ===
-    if 0:
+    if 1:
         spawn_robot = Node(
             package='ros_gz_sim',
             executable='create',
@@ -80,14 +81,30 @@ def launch_setup(context, *args, **kwargs):
             output='screen',
         )
 
-    # === ROS–Gazebo bridge for cmd_vel ===
+    # === ROS–Gazebo bridge ===
     ros_gz_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        name='ros_gz_bridge_cmdvel',
-        arguments=[
-            '/model/pioneer3dx/cmd_vel@geometry_msgs/msg/Twist@ignition.msgs.Twist'
-        ],
+        name='ros_gz_bridge_all',
+    arguments=[
+        # cmd_vel (ROS → Gazebo)
+        '/model/pioneer3dx/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
+        # odometry (Gazebo → ROS)
+        '/world/maze/model/pioneer3dx/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+        # joint states (Gazebo → ROS)
+        '/world/maze/model/pioneer3dx/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
+        # simulation clock (Gazebo → ROS)
+        #'/clock@rosgraph_msgs/msg/Clock@[gz.msgs.Clock',
+    ],
+    remappings=[
+        # (Optional) Simplify names for ROS side
+        ('/model/pioneer3dx/cmd_vel', '/cmd_vel'),
+        ('/world/maze/model/pioneer3dx/odometry', '/odom'),
+        ('/world/maze/model/pioneer3dx/joint_state', '/joint_states'),
+    ],
+    parameters=[
+    #    {'use_sim_time': 'true'}
+    ],
         output='screen',
     )
 
@@ -100,6 +117,7 @@ def launch_setup(context, *args, **kwargs):
         arguments=['-d', rviz_config_file],
         parameters=[{'use_sim_time': True}],
     )
+
 
     return [
         gz_resource_path,
