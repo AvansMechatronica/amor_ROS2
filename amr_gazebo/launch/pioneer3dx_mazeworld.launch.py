@@ -12,6 +12,7 @@ from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
 import os
 import xacro
+from launch.substitutions import Command
 
 
 
@@ -65,7 +66,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # === Spawn robot in Gazebo ===
-    if 1:
+    if 0:
         spawn_robot = Node(
             package='ros_gz_sim',
             executable='create',
@@ -73,11 +74,12 @@ def launch_setup(context, *args, **kwargs):
             output='screen',
         )
     else:
-        sdf_robot_description = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf')
+        sdf_robot_description_file = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf')
+        sdf_robot_description = Command(['xacro ', sdf_robot_description_file])
         spawn_robot = Node(
             package='ros_gz_sim',
             executable='create',
-            arguments=['-name', 'pioneer3dx', '-file', sdf_robot_description],
+            arguments=['-name', 'pioneer3dx', '-string', sdf_robot_description],
             output='screen',
         )
 
@@ -89,6 +91,8 @@ def launch_setup(context, *args, **kwargs):
     arguments=[
         # cmd_vel (ROS → Gazebo)
         '/model/pioneer3dx/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
+        # enable (ROS → Gazebo)
+        '/model/pioneer3dx/enable@std_msgs/msg/Bool]gz.msgs.Boolean',
         # odometry (Gazebo → ROS)
         '/world/maze/model/pioneer3dx/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
         # joint states (Gazebo → ROS)
@@ -101,6 +105,7 @@ def launch_setup(context, *args, **kwargs):
         ('/model/pioneer3dx/cmd_vel', '/cmd_vel'),
         ('/world/maze/model/pioneer3dx/odometry', '/odom'),
         ('/world/maze/model/pioneer3dx/joint_state', '/joint_states'),
+        ('/model/pioneer3dx/enable', '/enable'),
     ],
     parameters=[
     #    {'use_sim_time': 'true'}

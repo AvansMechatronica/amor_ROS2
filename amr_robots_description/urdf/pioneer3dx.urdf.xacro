@@ -188,9 +188,9 @@
 		<origin xyz="-0.026 0 -0.016" rpy="0 0 0"/>
 		<axis xyz="0 1 0"/>
 		<anchor xyz="0 0 0"/>
-    <limit effort="100" velocity="100" k_velocity="0" />
-    <joint_properties damping="0.0" friction="0.0" />
-	  <parent link="caster_swivel"/>
+		<limit effort="100" velocity="100" k_velocity="0" />
+		<joint_properties damping="0.0" friction="0.0" />
+	  	<parent link="caster_swivel"/>
 		<child link="caster_wheel"/>
 	</joint>
 
@@ -228,107 +228,81 @@
 		<child link="caster_hubcap"/>
 	</joint>
 
+	<!-- Wheels -->
+	<xacro:macro name="wheel" params="prefix y_offset">
 
-	<link name="left_hub">
-		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/left_hubcap.stl"/>
-			</geometry>
-			<material name="HubcapYellow">
-				<color rgba="1.0 0.811 0.151 1.0"/>
-			</material>
-		</visual>
-		<collision>
+		<link name="${prefix}_hub">
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<geometry>
+					<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/${prefix}_hubcap.stl"/>
+				</geometry>
+				<material name="HubcapYellow">
+					<color rgba="1.0 0.811 0.151 1.0"/>
+				</material>
+			</visual>
+			<collision>
 			<origin xyz="0 0 0" rpy="${-3.1415927/2.0} 0 0"/>
 			<geometry>
 				<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_wheel.stl"/>-->
 				<cylinder radius="0.09" length="0.01"/>
 			</geometry>
 		</collision>
-	</link>
+		</link>
+		<gazebo reference="${prefix}_hub">
+			<material value="Gazebo/Yellow"/>
+		</gazebo>
 
-	<joint name="left_hub_joint" type="fixed">
-		<origin xyz="0 0.15 0.08" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="left_hub"/>
-		<axis xyz="0 1 0"/>
-	</joint>
 
-	<link name="left_wheel">
-		<visual>
+		<joint name="${prefix}_hub_joint" type="fixed">
+			<origin xyz="0 ${y_offset} 0.08" rpy="0 0 0"/>
+			<parent link="base_link"/>
+			<child link="${prefix}_hub"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+
+		<link name="${prefix}_wheel">
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<geometry>
+					<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/${prefix}_wheel.stl"/>
+					<cylinder>
+						<radius>0.12</radius>
+						<length>0.04</length>
+					</cylinder>
+				</geometry>
+				<material name="WheelBlack">
+					<color rgba="0.117 0.117 0.117 1"/>
+				</material>
+			</visual>
+		</link>
+		<gazebo reference="${prefix}_wheel">
+			<material value="Gazebo/Black"/>
+		</gazebo>
+
+		<joint name="${prefix}_wheel_joint" type="revolute">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/left_wheel.stl"/>
-			</geometry>
-			<material name="WheelBlack">
-				<color rgba="0.117 0.117 0.117 1"/>
-			</material>
-		</visual>
-	</link>
 
-	<joint name="left_wheel_joint" type="continuous" >
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="left_hub"/>
-		<child link="left_wheel"/>
-	</joint>
-	
-	<gazebo reference="left_wheel_joint">
-		<material value="Gazebo/Black"/>
-	</gazebo>
+			<axis>
+			<xyz>0 1 0</xyz>
+			<limit>
+				<lower>-inf</lower>
+				<upper>inf</upper>
+			</limit>
+			</axis>
+			<limit effort="100" velocity="100" k_velocity="0" />
+			<joint_properties damping="0.0" friction="0.0" />
 
-	<link name="right_hub">
-		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/right_hubcap.stl"/>
-			</geometry>
-			<material name="HubcapYellow">
-				<color rgba="1.0 0.811 0.151 1.0"/>
-			</material>
-		</visual>
-		<collision>
-		<origin xyz="0 0 0" rpy="${-3.1415927/2.0} 0 0"/>
-		<geometry>
-			<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_wheel.stl"/>-->
-			<cylinder radius="0.09" length="0.01"/>
-		</geometry>
-	</collision>
-	</link>
-	<gazebo reference="right_hub">
-		<material value="Gazebo/Yellow"/>
-	</gazebo>
+			<parent link="${prefix}_hub"/>
+			<child link="${prefix}_wheel"/>
+		</joint>
+		<gazebo reference="${prefix}_wheel_joint">
+			<material value="Gazebo/Black"/>
+		</gazebo>
+	</xacro:macro>
 
-	<joint name="right_hub_joint" type="fixed">
-		<origin xyz="0 -0.15 0.08" rpy="0 0 0"/>
-		<parent link="base_link"/>
-		<child link="right_hub"/>
-		<axis xyz="0 1 0"/>
-	</joint>
-
-	<link name="right_wheel">
-		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/right_wheel.stl"/>
-			</geometry>
-			<material name="WheelBlack">
-				<color rgba="0.117 0.117 0.117 1"/>
-			</material>
-		</visual>
-	</link>
-
-	<joint name="right_wheel_joint" type="continuous">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link="right_hub"/>
-		<child link="right_wheel"/>
-	</joint>
-	<gazebo reference="right_wheel_joint">
-		<material value="Gazebo/Black"/>
-	</gazebo>
-
-
-	
+	<xacro:wheel prefix="left" y_offset="0.15" />
+	<xacro:wheel prefix="right" y_offset="-0.15" />
 
 	<create>
 	<back_sonar parent="base_link"/>
@@ -338,35 +312,36 @@
 	<!-- ============================= -->
 	<!-- Ignition Gazebo Diff Drive Plugin -->
 	<!-- ============================= -->
-  <gazebo>
-    <plugin
-		filename="gz-sim-diff-drive-system"
-		name="gz::sim::systems::DiffDrive">
-		<left_joint>left_wheel_joint</left_joint>
-		<right_joint>right_wheel_joint</right_joint>
-		<wheel_separation>0.158</wheel_separation>
-      	<wheel_radius>0.12</wheel_radius>
-		<!--
-		<wheel_separation>0.3</wheel_separation>
-		<wheel_radius>0.09</wheel_radius>
-		-->
-		<topic>/model/pioneer3dx/cmd_vel</topic>
-		<!--
-		<enable_odom>true</enable_odom>
-		<odom_frame>odom</odom_frame>
-		-->
-		<base_frame>base_link</base_frame>
-		<publish_rate>50</publish_rate>
-    </plugin>
-	
+	<gazebo>
+		<plugin
+			filename="gz-sim-diff-drive-system"
+			name="gz::sim::systems::DiffDrive">
+			<left_joint>pioneer3dx::left_wheel_joint</left_joint>
+			<right_joint>pioneer3dx::right_wheel_joint</right_joint>
+			<wheel_separation>0.158</wheel_separation>
+			<wheel_radius>0.12</wheel_radius>
+			<!--
+			<wheel_separation>0.3</wheel_separation>
+			<wheel_radius>0.09</wheel_radius>
+			-->
+			<!--
+			<topic>/model/pioneer3dx/cmd_vel</topic>
+			-->
+			<!--
+			<enable_odom>true</enable_odom>
+			<odom_frame>odom</odom_frame>
+			-->
+			<base_frame>base_link</base_frame>
+			<publish_rate>50</publish_rate>
+			<publish_joint_states>true</publish_joint_states>
+		</plugin>
 
+		<plugin
+			name="gz::sim::systems::JointStatePublisher"
+			filename="libgz-sim-joint-state-publisher-system.so">
+		</plugin>
 
-	<plugin
-		name="gz::sim::systems::JointStatePublisher"
-		filename="libgz-sim-joint-state-publisher-system.so">
-	</plugin>
-
-  </gazebo>
+	</gazebo>
 
 
 </robot>
