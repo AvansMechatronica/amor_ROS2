@@ -74,12 +74,14 @@ def launch_setup(context, *args, **kwargs):
             output='screen',
         )
     else:
-        sdf_robot_description_file = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf')
+        sdf_robot_description_file = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf.xacro')
         sdf_robot_description = Command(['xacro ', sdf_robot_description_file])
         spawn_robot = Node(
             package='ros_gz_sim',
             executable='create',
-            arguments=['-name', 'pioneer3dx', '-string', sdf_robot_description],
+            arguments=['-name', 'pioneer3dx', 
+                       '-string', sdf_robot_description],
+                       #'-z', '0.1'],
             output='screen',
         )
 

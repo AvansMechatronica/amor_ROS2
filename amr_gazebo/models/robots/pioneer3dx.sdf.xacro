@@ -26,9 +26,11 @@
     <!--
     <pose>0 0 0 0 0 0</pose>
     -->
+    <link name="base_link"/>
 
-    <!-- Base Link / Chassis -->
-    <link name="base_link">
+
+    <!-- Chassis -->
+    <link name="chassis">
       <pose>0 0 0 0 0 0</pose>
       <inertial>
         <mass>3.5</mass>
@@ -43,14 +45,21 @@
       </inertial>
       <visual name="chassis_visual">
         <geometry>
+          <!--
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+          -->
           <mesh>
             <uri>package://amr_robots_description/meshes/p3dx_meshes/chassis.stl</uri>
           </mesh>
         </geometry>
+        <!--
         <material>
           <ambient>0.851 0 0 1</ambient>
           <diffuse>0.851 0 0 1</diffuse>
         </material>
+        -->
       </visual>
       <collision name="chassis_collision">
         <geometry>
@@ -60,6 +69,12 @@
         </geometry>
       </collision>
     </link>
+
+    <joint name="chassis_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>chassis</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>
 
     <!-- Top Plate -->
     <link name="top_plate">
@@ -189,8 +204,7 @@
 
     <!-- Wheels & Hub -->
     <xacro:macro name="wheel" params="prefix y_offset">
-
-      <!-- Right Hub & Wheel -->
+      <!-- Wheel Hub -->
       <link name="${prefix}_hub">
         <pose>0 ${y_offset} 0.08 0 0 0</pose>
         <visual name="${prefix}_hub_visual">
@@ -201,50 +215,48 @@
           </geometry>
         </visual>
       </link>
+
       <joint name="${prefix}_hub_joint" type="fixed">
         <parent>base_link</parent>
         <child>${prefix}_hub</child>
-        <pose>0 -0.15 0.08 0 0 0</pose>
       </joint>
 
-
+      <!-- Wheel -->
       <link name="${prefix}_wheel">
-        <pose>0 0 0 0 0 0</pose>
-          <visual name="${prefix}_wheel_visual">
-            <geometry>
-              <!--
-              <mesh>
-                <uri>model://amr_robots_description/meshes/p3dx_meshes/${prefix}_wheel.stl</uri>
-              </mesh>
-                -->
-              <cylinder>
-                <radius>${wheel_radius}</radius>
-                <length>${wheel_width}</length>
-              </cylinder>
-            </geometry>
-            <material>
-              <ambient>0.3 0.3 0.3 1.0</ambient>
-              <diffuse>0.7 0.7 0.7 1.0</diffuse>
-            </material>
-          </visual>
-      <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" h="${wheel_width}"/>  
+        <pose>0 ${y_offset} 0.08 0 0 0</pose> <!-- dit snap ik niet  -->
+        <visual name="${prefix}_wheel_visual">
+          <geometry>
+            <mesh>
+              <uri>package://amr_robots_description/meshes/p3dx_meshes/${prefix}_wheel.stl</uri>
+            </mesh>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1.0</ambient>
+            <diffuse>0.7 0.7 0.7 1.0</diffuse>
+          </material>
+        </visual>
+
+        <!-- Wheel inertia -->
+        <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" h="${wheel_width}"/>
       </link>
+
+      <!-- Revolute joint for wheel rotation -->
       <joint name="${prefix}_wheel_joint" type="revolute">
         <parent>${prefix}_hub</parent>
         <child>${prefix}_wheel</child>
-        <!--
-        <axis><xyz>0 1 0</xyz></axis>
-        -->
+        <!-- Move wheel along x so it lines up properly with hub -->
+        <pose>0 0 0 0 0 0</pose>
+        <!-- Rotation axis along Y -->
         <axis>
-            <xyz>0 1 0</xyz>
-            <limit>
-              <lower>-1e16</lower>
-              <upper>1e16</upper>
-            </limit>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <lower>-1e16</lower>
+            <upper>1e16</upper>
+            <effort>10</effort>
+            <velocity>10</velocity>
+          </limit>
         </axis>
-        <pose>0 0 0 -1.57079635 0 0</pose> <!-- ???? -->
       </joint>
-
     </xacro:macro>
 
     <xacro:wheel prefix="left" y_offset="0.15" />
@@ -252,6 +264,7 @@
 
 
     <!-- DiffDrive Plugin -->
+    <!--
     <plugin 
       filename="gz-sim-diff-drive-system"
 		  name="gz::sim::systems::DiffDrive">
@@ -263,13 +276,15 @@
       <publish_rate>50</publish_rate>
       <publish_joint_states>true</publish_joint_states>
     </plugin>
+    -->
 
 
     <!-- JointState Publisher -->
+    <!--
     <plugin
       name="gz::sim::systems::JointStatePublisher"
       filename="libgz-sim-joint-state-publisher-system.so">
     </plugin>
-
+    -->
   </model>
 </sdf>

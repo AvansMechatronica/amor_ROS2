@@ -244,7 +244,7 @@
 			<collision>
 			<origin xyz="0 0 0" rpy="${-3.1415927/2.0} 0 0"/>
 			<geometry>
-				<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/caster_wheel.stl"/>-->
+				<!--<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/${prefix}_wheel.stl"/>-->
 				<cylinder radius="0.09" length="0.01"/>
 			</geometry>
 		</collision>
@@ -266,10 +266,12 @@
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
 					<mesh filename="package://amr_robots_description/meshes/p3dx_meshes/${prefix}_wheel.stl"/>
+					<!--
 					<cylinder>
 						<radius>0.12</radius>
 						<length>0.04</length>
 					</cylinder>
+					-->
 				</geometry>
 				<material name="WheelBlack">
 					<color rgba="0.117 0.117 0.117 1"/>
@@ -280,7 +282,7 @@
 			<material value="Gazebo/Black"/>
 		</gazebo>
 
-		<joint name="${prefix}_wheel_joint" type="revolute">
+		<joint name="${prefix}_wheel_joint" type="fixed"> <!--type="revolute"-->
 			<origin xyz="0 0 0" rpy="0 0 0"/>
 
 			<axis>
@@ -305,8 +307,8 @@
 	<xacro:wheel prefix="right" y_offset="-0.15" />
 
 	<create>
-	<back_sonar parent="base_link"/>
-  	<top_plate  parent="base_link"/>
+		<back_sonar parent="base_link"/>
+		<top_plate  parent="base_link"/>
   	</create>
 
 	<!-- ============================= -->
