@@ -26,11 +26,7 @@
     <!--
     <pose>0 0 0 0 0 0</pose>
     -->
-    <link name="base_link"/>
-
-
-    <!-- Chassis -->
-    <link name="chassis">
+    <link name="base_link">
       <pose>0 0 0 0 0 0</pose>
       <inertial>
         <mass>3.5</mass>
@@ -45,21 +41,14 @@
       </inertial>
       <visual name="chassis_visual">
         <geometry>
-          <!--
-          <box>
-            <size>0.01 0.01 0.01</size>
-          </box>
-          -->
           <mesh>
-            <uri>package://amr_robots_description/meshes/p3dx_meshes/chassis.stl</uri>
+            <uri>package://amr_robots_description/meshes/p3dx_meshes/chassisx.stl</uri>
           </mesh>
         </geometry>
-        <!--
         <material>
           <ambient>0.851 0 0 1</ambient>
           <diffuse>0.851 0 0 1</diffuse>
         </material>
-        -->
       </visual>
       <collision name="chassis_collision">
         <geometry>
@@ -70,12 +59,13 @@
       </collision>
     </link>
 
+<!--
     <joint name="chassis_joint" type="fixed">
       <parent>base_link</parent>
       <child>chassis</child>
       <pose>0 0 0 0 0 0</pose>
     </joint>
-
+-->
     <!-- Top Plate -->
     <link name="top_plate">
       <pose>-0.045 0 0.234 0 0 0</pose>

@@ -66,24 +66,16 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # === Spawn robot in Gazebo ===
-    if 0:
-        spawn_robot = Node(
-            package='ros_gz_sim',
-            executable='create',
-            arguments=['-name', 'pioneer3dx', '-topic', 'robot_description'],
-            output='screen',
-        )
-    else:
-        sdf_robot_description_file = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf.xacro')
-        sdf_robot_description = Command(['xacro ', sdf_robot_description_file])
-        spawn_robot = Node(
-            package='ros_gz_sim',
-            executable='create',
-            arguments=['-name', 'pioneer3dx', 
-                       '-string', sdf_robot_description],
-                       #'-z', '0.1'],
-            output='screen',
-        )
+    sdf_robot_description_file = os.path.join(sim_pkg, 'models', 'robots', 'pioneer3dx.sdf.xacro')
+    sdf_robot_description = Command(['xacro ', sdf_robot_description_file])
+    spawn_robot = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=['-name', 'pioneer3dx', 
+                    '-string', sdf_robot_description],
+                    #'-z', '0.1'],
+        output='screen',
+    )
 
     # === ROS–Gazebo bridge ===
     ros_gz_bridge = Node(
@@ -132,7 +124,7 @@ def launch_setup(context, *args, **kwargs):
         robot_state_publisher,
         spawn_robot,
         ros_gz_bridge,
-        rviz_node,
+        #rviz_node,
     ]
 
 

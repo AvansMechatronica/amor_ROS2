@@ -4,7 +4,6 @@ from glob import glob
 
 package_name = 'amr_robots_description'
 
-
 data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
